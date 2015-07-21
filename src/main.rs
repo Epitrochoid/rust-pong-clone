@@ -100,8 +100,8 @@ fn main() {
         width: 20.0
     };
     let mut ball = Ball {
-        xpos: 400.0,
-        ypos: 300.0,
+        xpos: 390.0,
+        ypos: 290.0,
         xvel: 0.0,
         yvel: 0.0,
         width: 10.0
@@ -122,5 +122,4 @@ fn main() {
             _ => {}
         }
     }
-
 }
