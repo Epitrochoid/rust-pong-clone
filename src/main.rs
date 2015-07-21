@@ -20,11 +20,15 @@ pub struct Paddle {
 
 impl Paddle {
     fn mv_up(&mut self) {
-        self.ypos -= 10.0;
+        if (self.ypos > 10.0) {
+            self.ypos -= 10.0;
+        }
     }
 
     fn mv_down(&mut self) {
-        self.ypos += 10.0;
+        if (self.ypos < 490.0) {
+            self.ypos += 10.0;
+        }
     }
 }
 
@@ -73,6 +77,24 @@ impl App {
 
         });
     }
+
+    fn handle_input(&mut self, i: Input) {
+        match i {
+            Input::Press(Keyboard(Key::F)) => {
+                self.player1.mv_up();
+            }
+            Input::Press(Keyboard(Key::D)) => {
+                self.player1.mv_down();
+            }
+            Input::Press(Keyboard(Key::J)) => {
+                self.player2.mv_up();
+            }
+            Input::Press(Keyboard(Key::K)) => {
+                self.player2.mv_down();
+            }
+           _ => {}
+        }
+    }
 }
 
 fn main() {
@@ -118,6 +140,9 @@ fn main() {
         match e {
             Event::Render(args) => {
                 app.render(&args);
+            }
+            Event::Input(i) => {
+                app.handle_input(i);
             }
             _ => {}
         }
