@@ -41,9 +41,24 @@ pub struct Ball {
 }
 
 impl Ball {
-    fn update(&mut self) {
-        self.ypos += self.yvel;
-        self.xpos += self.xvel;
+    fn update(&mut self, p1: f64, p2: f64) {
+        // Full collision detection for ball
+        if (self.ypos <= 10.0 || self.ypos >= 580.0) {
+            self.yvel *= -1.0;
+            self.ypos += self.yvel;
+        } else if (self.xpos == 20.0 && self.ypos >= p1 && self.ypos <= (p1+100.0)) {
+            self.xvel *= -1.0;
+            self.xpos += self.xvel;
+        } else if (self.xpos == 770.0 && self.ypos >= p2 && self.ypos <= (p2+100.0)) {
+            self.xvel *= -1.0;
+            self.xpos += self.xvel;
+        } else if (self.xpos <= 5.0 || self.xpos >= 785.0) {
+            self.xpos = 390.0;
+            self.ypos = 290.0;
+        } else {
+            self.xpos += self.xvel;
+            self.ypos += self.yvel;
+        }
     }
 }
 
@@ -95,6 +110,10 @@ impl App {
            _ => {}
         }
     }
+
+    fn update(&mut self, args: &UpdateArgs) {
+        self.ball.update(self.player1.ypos, self.player2.ypos);
+    }
 }
 
 fn main() {
@@ -124,8 +143,8 @@ fn main() {
     let mut ball = Ball {
         xpos: 390.0,
         ypos: 290.0,
-        xvel: 0.0,
-        yvel: 0.0,
+        xvel: -0.5,
+        yvel: 1.0,
         width: 10.0
     };
 
@@ -143,6 +162,9 @@ fn main() {
             }
             Event::Input(i) => {
                 app.handle_input(i);
+            }
+            Event::Update(args) => {
+                app.update(&args);
             }
             _ => {}
         }
