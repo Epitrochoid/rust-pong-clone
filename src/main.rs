@@ -2,11 +2,12 @@ extern crate piston;
 extern crate graphics;
 extern crate glutin_window;
 extern crate opengl_graphics;
+extern crate find_folder;
 
 use piston::window::WindowSettings;
 use piston::event::*;
 use glutin_window::GlutinWindow as Window;
-use opengl_graphics::{ GlGraphics, OpenGL };
+use opengl_graphics::{ GlGraphics, OpenGL, Texture };
 use piston::input::Button::{ Keyboard };
 use piston::input::Input;
 use piston::input::keyboard::Key;
@@ -66,30 +67,33 @@ pub struct App {
     gl: GlGraphics,
     player1: Paddle,
     player2: Paddle,
-    ball: Ball
+    ball: Ball,
+    logo: Texture
 }
 
 impl App {
     fn render(&mut self, args: &RenderArgs) {
         use graphics::*;
 
-        const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
+        const BLACK: [f32; 4] = [0.1, 0.1, 0.1, 1.0];
         const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
 
         let square = rectangle::square(self.ball.xpos, self.ball.ypos, self.ball.width);
         let rec1 = [self.player1.xpos, self.player1.ypos, self.player1.width, self.player1.height];
         let rec2 = [self.player2.xpos, self.player2.ypos, self.player2.width, self.player2.height];
+        let logo = &self.logo;
 
         self.gl.draw(args.viewport(), |c, gl| {
             clear(BLACK, gl);
 
+            // Rust logo
+            image(logo, c.transform, gl);
             // Player 1 paddle
             rectangle(BLUE, rec1, c.transform, gl);
             // Player 2 paddle
             rectangle(BLUE, rec2, c.transform, gl);
             // Ball
             rectangle(BLUE, square, c.transform, gl);
-
         });
     }
 
@@ -148,11 +152,17 @@ fn main() {
         width: 10.0
     };
 
+    let assets = find_folder::Search::ParentsThenKids(3, 3)
+        .for_folder("assets").unwrap();
+    let rust_logo = assets.join("rust.png");
+    let rust_logo = Texture::from_path(rust_logo).unwrap();
+
     let mut app = App {
         gl: GlGraphics::new(opengl),
         player1: p1,
         player2: p2,
-        ball: ball
+        ball: ball,
+        logo: rust_logo
     };
 
     for e in window.events() {
